@@ -96,7 +96,7 @@
     $: showExport = $viewAllData || ($currentPhase && phaseWidgets[$currentPhase]?.includes('export')) || false;
 </script>
 
-<div class="bg-black text-white min-h-screen p-4">
+<div class="bg-black text-white min-h-screen p-4 w-full">
     <!-- Rest Mode Banner -->
     <RestModeBanner />
     
