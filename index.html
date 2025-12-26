@@ -31,43 +31,78 @@
                 padding-bottom: env(safe-area-inset-bottom);
             }
         }
+        body.rest-mode {
+            --primary: #F59E0B;
+            --primary-dark: #D97706;
+        }
+        body.rest-mode .bg-primary,
+        body.rest-mode .text-primary,
+        body.rest-mode .border-primary {
+            color: #F59E0B !important;
+            background-color: #F59E0B !important;
+            border-color: #F59E0B !important;
+        }
+        body.rest-mode [class*="accent-primary"] {
+            accent-color: #F59E0B;
+        }
     </style>
 </head>
 <body class="bg-black text-white min-h-screen p-4">
     
-    <!-- Landing Section -->
+    <!-- Top Navigation -->
     <div class="max-w-6xl mx-auto mb-8">
-        <div class="bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-8 md:p-12 text-center">
-            <h1 class="text-3xl md:text-5xl font-bold text-primary mb-4">PersonalOS</h1>
-            <p class="text-2xl md:text-3xl font-semibold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-primary mb-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-1">PersonalOS</h1>
+                <p class="text-xl md:text-2xl font-semibold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-primary mb-1">
                 PERSEVERANCE AND FAITH
             </p>
-            
-            <!-- Work/Personal Toggle -->
-            <div class="flex items-center justify-center gap-3">
-                <span class="text-sm font-medium" id="personalLabel">Personal</span>
-                <button onclick="app.toggleCategory()" class="relative w-14 h-7 bg-[#2a2a2a] rounded-full transition-colors duration-200" id="categoryToggle">
-                    <div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200" id="categoryToggleKnob"></div>
-                </button>
-                <span class="text-sm font-medium" id="workLabel">Work</span>
+                <p class="text-sm text-gray-400" id="currentPhaseLabel">Loading...</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button onclick="app.toggleMenu()" class="w-9 h-9 flex items-center justify-center bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg hover:border-primary transition-colors" id="menuButton">
+                        <span class="material-symbols-outlined text-lg">menu</span>
+                    </button>
+                    <div id="phaseMenu" class="hidden absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-lg z-50">
+                        <div class="p-3 border-b border-[#2a2a2a]">
+                            <div class="text-xs text-gray-400 mb-1">Current Phase</div>
+                            <div class="font-semibold" id="menuCurrentPhase">-</div>
+                            <div class="text-xs text-gray-500 mt-1" id="menuCurrentTime">-</div>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            <div id="phaseMenuItems" class="p-2">
+                                <!-- Phase items will be rendered here -->
+                            </div>
+                        </div>
+                        <div class="p-2 border-t border-[#2a2a2a]">
+                            <button onclick="app.openSettings()" class="w-full text-left px-3 py-2 text-sm hover:bg-[#2a2a2a] rounded-lg transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">settings</span>
+                                <span>Settings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Grid Container -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto mb-8 items-stretch">
         
         <!-- Time Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
-            <div id="time" class="text-6xl font-bold text-primary mb-2">12:34</div>
-            <div id="date" class="text-gray-400">Friday, December 27</div>
+        <div id="time-widget" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg flex flex-col items-center justify-center min-h-[200px] h-full">
+            <div class="flex flex-col items-center justify-center w-full h-full">
+                <div id="time" class="text-6xl font-bold text-primary mb-2 text-center w-full">12:34</div>
+                <div id="date" class="text-gray-400 text-center">Friday, December 27</div>
+            </div>
         </div>
         
         <!-- Mood Tracker Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+        <div id="mood-widget" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Mood Tracker</h2>
-                <button onclick="app.saveMood()" class="text-primary hover:text-primary/80 text-sm" id="saveMoodBtn">Save</button>
+                <button onclick="app.saveMood()" class="px-4 py-2 bg-primary hover:bg-primary/80 text-sm rounded-lg transition-colors" id="saveMoodBtn">Save</button>
             </div>
             
             <div class="grid md:grid-cols-2 gap-6">
@@ -93,11 +128,11 @@
                     <div>
                         <label class="text-sm text-gray-400 mb-2 block">Mood</label>
                         <div class="flex gap-2 justify-between">
-                            <button onclick="app.selectMood('😢')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😢">😢</button>
-                            <button onclick="app.selectMood('😕')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😕">😕</button>
-                            <button onclick="app.selectMood('😐')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😐">😐</button>
-                            <button onclick="app.selectMood('🙂')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="🙂">🙂</button>
-                            <button onclick="app.selectMood('😄')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😄">😄</button>
+                            <button onclick="app.selectMood('😢')" class="mood-btn text-3xl p-3 rounded-lg hover:bg-[#2a2a2a] transition-colors" data-mood="😢">😢</button>
+                            <button onclick="app.selectMood('😕')" class="mood-btn text-3xl p-3 rounded-lg hover:bg-[#2a2a2a] transition-colors" data-mood="😕">😕</button>
+                            <button onclick="app.selectMood('😐')" class="mood-btn text-3xl p-3 rounded-lg hover:bg-[#2a2a2a] transition-colors" data-mood="😐">😐</button>
+                            <button onclick="app.selectMood('🙂')" class="mood-btn text-3xl p-3 rounded-lg hover:bg-[#2a2a2a] transition-colors" data-mood="🙂">🙂</button>
+                            <button onclick="app.selectMood('😄')" class="mood-btn text-3xl p-3 rounded-lg hover:bg-[#2a2a2a] transition-colors" data-mood="😄">😄</button>
                         </div>
                     </div>
                 </div>
@@ -113,10 +148,10 @@
         </div>
         
         <!-- Tasks Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+        <div id="tasks-widget" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Tasks</h2>
-                <button onclick="app.addTask()" class="text-primary hover:text-primary/80 text-2xl">+</button>
+                <button onclick="app.addTask()" class="w-8 h-8 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-semibold">+</button>
             </div>
             <div id="tasks" class="space-y-3">
                 <!-- Tasks will be rendered here -->
@@ -124,27 +159,131 @@
         </div>
         
         <!-- Notes Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+        <div id="notes-work" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Notes</h2>
-                <button onclick="app.addNote()" class="text-primary hover:text-primary/80 text-2xl">+</button>
+                <button onclick="app.addNote()" class="w-8 h-8 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-semibold">+</button>
             </div>
-            <div id="notes" class="space-y-3">
+            <div id="notes-work-list" class="space-y-3">
                 <!-- Notes will be rendered here -->
             </div>
         </div>
         
-        <!-- Reading/Watch List Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+        <!-- Meditation Timer Widget -->
+        <div id="meditation" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+            <h2 class="text-xl font-semibold mb-4">Meditation Break</h2>
+            <div id="meditationTimer" class="text-4xl font-bold text-primary mb-4 text-center">15:00</div>
+            <div class="flex gap-3 justify-center">
+                <button id="meditationStart" onclick="app.meditationTimer.start()" class="bg-primary hover:bg-primary/80 px-4 py-2 rounded-lg transition-colors">Start</button>
+                <button id="meditationPause" onclick="app.meditationTimer.pause()" class="bg-[#2a2a2a] hover:bg-[#3a3a3a] px-4 py-2 rounded-lg transition-colors">Pause</button>
+                <button id="meditationReset" onclick="app.meditationTimer.reset()" class="bg-[#2a2a2a] hover:bg-[#3a3a3a] px-4 py-2 rounded-lg transition-colors">Reset</button>
+            </div>
+        </div>
+        
+        <!-- Shutdown Form Widget -->
+        <div id="shutdown-form" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+            <h2 class="text-xl font-semibold mb-4">Work Shutdown</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">What did you ship today?</label>
+                    <textarea id="shutdownShipped" rows="4" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors"></textarea>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">Tomorrow's #1 Priority</label>
+                    <input id="shutdownTomorrow" type="text" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors">
+                </div>
+            </div>
+            <button onclick="app.saveShutdown()" class="mt-4 bg-primary hover:bg-primary/80 px-4 py-2 rounded-lg transition-colors">Save</button>
+        </div>
+        
+        <!-- Gaming Timer Widget -->
+        <div id="gaming-timer" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+            <h2 class="text-xl font-semibold mb-4">Gaming Timer</h2>
+            <div id="gamingTimer" class="text-4xl font-bold text-primary mb-4 text-center">30:00</div>
+            <div class="flex gap-3 justify-center">
+                <button onclick="app.gamingTimer.start()" class="bg-primary hover:bg-primary/80 px-4 py-2 rounded-lg transition-colors">START GAMING</button>
+                <button onclick="app.gamingTimer.pause()" class="bg-[#2a2a2a] hover:bg-[#3a3a3a] px-4 py-2 rounded-lg transition-colors">Pause</button>
+                <button onclick="app.gamingTimer.reset()" class="bg-[#2a2a2a] hover:bg-[#3a3a3a] px-4 py-2 rounded-lg transition-colors">Reset</button>
+            </div>
+        </div>
+        
+        <!-- Watch List Widget -->
+        <div id="watchlist" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Watch List</h2>
+                <button onclick="app.addShow()" class="w-8 h-8 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-semibold">+</button>
+            </div>
+            <div id="watchList" class="space-y-3">
+                <!-- Watch list will be rendered here -->
+            </div>
+        </div>
+        
+        <!-- Reading Protocol Widget -->
+        <div id="reading-protocol" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+            <h3 class="text-lg font-semibold mb-3">Tonight's Reading</h3>
+            <div id="readingRec" class="text-xl flex items-center gap-2">
+                <span class="material-symbols-outlined">menu_book</span>
+                <span id="readingType">Technical Reading</span>
+            </div>
+            <div id="restModeNote" class="hidden text-sm text-amber-500 mt-2">
+                Rest Mode Active
+            </div>
+        </div>
+        
+        <!-- Reading List Widget -->
+        <div id="readinglist" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Reading List</h2>
+                <button onclick="app.addBook()" class="w-8 h-8 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-semibold">+</button>
+            </div>
+            <div id="readingList" class="space-y-3">
+                <!-- Reading list will be rendered here -->
+            </div>
+        </div>
+        
+        <!-- Reading/Watch List Widget (Legacy) -->
+        <div id="list-widget" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Reading / Watch List</h2>
-                <button onclick="app.addListItem()" class="text-primary hover:text-primary/80 text-2xl">+</button>
+                <button onclick="app.addListItem()" class="w-8 h-8 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-semibold">+</button>
             </div>
             <div id="list" class="grid md:grid-cols-2 gap-3">
                 <!-- List items will be rendered here -->
             </div>
         </div>
         
+        <!-- Export Widget -->
+        <div id="export" class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+            <h2 class="text-xl font-semibold mb-4">Export Data</h2>
+            <button onclick="app.exportData()" class="bg-primary hover:bg-primary/80 px-4 py-2 rounded-lg transition-colors">Export All Data</button>
+        </div>
+        
+    </div>
+    
+    <!-- Rest Mode Banner -->
+    <div id="restModeBanner" class="hidden fixed top-0 left-0 right-0 bg-amber-500/20 border-b border-amber-500 p-3 text-center z-30">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <span class="text-sm">Rest Mode Active - Light activities recommended</span>
+            <button onclick="app.dismissRestBanner()" class="text-amber-500 hover:text-amber-400 text-sm">✕</button>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold">Settings</h2>
+                <button onclick="app.closeSettings()" class="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div id="settingsTabs" class="flex gap-4 border-b border-[#2a2a2a] mb-4">
+                <button onclick="app.showSettingsTab('schedule')" class="tab px-4 py-2 border-b-2 border-primary" data-tab="schedule">Schedule</button>
+                <button onclick="app.showSettingsTab('preferences')" class="tab px-4 py-2 text-gray-400" data-tab="preferences">Preferences</button>
+                <button onclick="app.showSettingsTab('about')" class="tab px-4 py-2 text-gray-400" data-tab="about">About</button>
+            </div>
+            <div id="settingsContent" class="mt-4">
+                <!-- Tab content will be rendered here -->
+            </div>
+        </div>
     </div>
 
     <!-- Modal for adding/editing -->
@@ -153,8 +292,8 @@
             <h3 id="modalTitle" class="text-xl font-semibold mb-4">Add Item</h3>
             <div id="modalContent"></div>
             <div class="flex gap-3 mt-4">
-                <button onclick="app.closeModal()" class="flex-1 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded px-4 py-2">Cancel</button>
-                <button id="modalSubmit" class="flex-1 bg-primary hover:bg-primary/80 rounded px-4 py-2">Save</button>
+                <button onclick="app.closeModal()" class="flex-1 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-lg px-4 py-2 transition-colors">Cancel</button>
+                <button id="modalSubmit" class="flex-1 bg-primary hover:bg-primary/80 rounded-lg px-4 py-2 transition-colors">Save</button>
             </div>
         </div>
     </div>
@@ -185,7 +324,7 @@
             constructor() {
                 this.db = null;
                 this.dbName = 'PersonalOS';
-                this.version = 3; // Incremented for list store
+                this.version = 6; // v4: schedule, v5: daily_logs/work_notes, v6: readinglist/watchlist
             }
 
             async init() {
@@ -200,7 +339,11 @@
                     
                     request.onupgradeneeded = (e) => {
                         const db = e.target.result;
+                        const oldVersion = e.oldVersion;
+                        const transaction = e.target.transaction;
                         
+                        try {
+                            // Existing stores
                         if (!db.objectStoreNames.contains('tasks')) {
                             db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
                         }
@@ -216,8 +359,86 @@
                         if (!db.objectStoreNames.contains('list')) {
                             db.createObjectStore('list', { keyPath: 'id', autoIncrement: true });
                         }
+                            
+                            // v4: Schedule store
+                            if (oldVersion < 4) {
+                                if (!db.objectStoreNames.contains('schedule')) {
+                                    const scheduleStore = db.createObjectStore('schedule', { keyPath: 'id', autoIncrement: true });
+                                    scheduleStore.createIndex('startTime', 'startTime', { unique: false });
+                                    scheduleStore.createIndex('phase', 'phase', { unique: false });
+                                }
+                            }
+                            
+                            // v5: Daily logs and work notes
+                            if (oldVersion < 5) {
+                                if (!db.objectStoreNames.contains('daily_logs')) {
+                                    db.createObjectStore('daily_logs', { keyPath: 'id', autoIncrement: true });
+                                }
+                                if (!db.objectStoreNames.contains('work_notes')) {
+                                    db.createObjectStore('work_notes', { keyPath: 'id', autoIncrement: true });
+                                }
+                            }
+                            
+                            // v6: Split list into readinglist and watchlist
+                            if (oldVersion < 6) {
+                                if (!db.objectStoreNames.contains('readinglist')) {
+                                    db.createObjectStore('readinglist', { keyPath: 'id', autoIncrement: true });
+                                }
+                                if (!db.objectStoreNames.contains('watchlist')) {
+                                    db.createObjectStore('watchlist', { keyPath: 'id', autoIncrement: true });
+                                }
+                                
+                                // Migrate existing list data
+                                if (db.objectStoreNames.contains('list')) {
+                                    const listStore = transaction.objectStore('list');
+                                    const readingStore = transaction.objectStore('readinglist');
+                                    const watchStore = transaction.objectStore('watchlist');
+                                    
+                                    listStore.getAll().onsuccess = (e) => {
+                                        const items = e.target.result;
+                                        items.forEach(item => {
+                                            const newItem = {
+                                                title: item.title,
+                                                notes: item.notes || '',
+                                                completed: item.completed || false
+                                            };
+                                            
+                                            if (item.type === 'book') {
+                                                newItem.category = item.category || 'technical';
+                                                readingStore.add(newItem);
+                                            } else {
+                                                watchStore.add(newItem);
+                                            }
+                                        });
+                                    };
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Migration failed:', error);
+                            throw error;
+                        }
                     };
                 });
+            }
+            
+            async initDefaultSchedule() {
+                const existing = await this.getAll('schedule');
+                if (existing.length > 0) return;
+                
+                const defaultSchedule = [
+                    { startTime: '06:45', endTime: '07:00', phase: 'MORNING_PLAN', label: 'Morning Planning', description: 'Review personal tasks & goals', activeDays: [0,1,2,3,4,5,6], order: 0 },
+                    { startTime: '07:00', endTime: '08:00', phase: 'RUN', label: 'Running', description: 'Training session', activeDays: [1,2,4,6], order: 1 },
+                    { startTime: '08:30', endTime: '17:00', phase: 'WORK', label: 'Work Hours', description: 'Focus + meditation breaks', activeDays: [1,2,3,4,5], order: 2 },
+                    { startTime: '17:00', endTime: '17:15', phase: 'SHUTDOWN', label: 'Work Shutdown', description: 'Document progress & tomorrow\'s plan', activeDays: [1,2,3,4,5], order: 3 },
+                    { startTime: '17:15', endTime: '17:45', phase: 'DECOMPRESS', label: 'Gaming', description: '30m decompression session', activeDays: [1,2,3,4,5], order: 4 },
+                    { startTime: '19:00', endTime: '20:00', phase: 'COOK_TV', label: 'Dinner Time', description: 'Cook + entertainment', activeDays: [0,1,2,3,4,5,6], order: 5 },
+                    { startTime: '21:00', endTime: '23:45', phase: 'DEEP_WORK', label: 'Deep Work', description: 'Learning, reading, interview prep', activeDays: [0,1,2,3,4,5,6], order: 6 },
+                    { startTime: '23:45', endTime: '23:50', phase: 'CHECK_IN', label: 'EOD Check-in', description: 'Log fatigue & mood', activeDays: [0,1,2,3,4,5,6], order: 7 }
+                ];
+                
+                for (const block of defaultSchedule) {
+                    await this.add('schedule', block);
+                }
             }
 
             async getAll(storeName) {
@@ -261,28 +482,794 @@
             }
         }
 
+        // Timer Classes
+        class MeditationTimer {
+            constructor(app) {
+                this.app = app;
+                this.duration = 900; // 15 minutes
+                this.remaining = this.loadState() || this.duration;
+                this.isRunning = false;
+                this.interval = null;
+                this.updateDisplay();
+            }
+            
+            loadState() {
+                const saved = localStorage.getItem('meditationTimer');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    const elapsed = Math.floor((Date.now() - data.timestamp) / 1000);
+                    return Math.max(0, data.remaining - elapsed);
+                }
+                return null;
+            }
+            
+            saveState() {
+                localStorage.setItem('meditationTimer', JSON.stringify({
+                    remaining: this.remaining,
+                    timestamp: Date.now()
+                }));
+            }
+            
+            updateDisplay() {
+                const el = document.getElementById('meditationTimer');
+                if (el) {
+                    const mins = Math.floor(this.remaining / 60);
+                    const secs = this.remaining % 60;
+                    el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                }
+            }
+            
+            start() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.interval = setInterval(() => {
+                    this.remaining--;
+                    this.updateDisplay();
+                    this.saveState();
+                    
+                    if (this.remaining <= 0) {
+                        this.complete();
+                    }
+                }, 1000);
+            }
+            
+            pause() {
+                this.isRunning = false;
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                this.saveState();
+            }
+            
+            reset() {
+                this.pause();
+                this.remaining = this.duration;
+                this.updateDisplay();
+                localStorage.removeItem('meditationTimer');
+            }
+            
+            complete() {
+                this.pause();
+                this.remaining = 0;
+                this.updateDisplay();
+                
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Meditation Complete', {
+                        body: 'Your 15-minute meditation session is complete.',
+                        icon: '/icon-192.png'
+                    });
+                }
+                
+                localStorage.removeItem('meditationTimer');
+            }
+        }
+        
+        class GamingTimer {
+            constructor(app) {
+                this.app = app;
+                this.duration = 1800; // 30 minutes
+                this.remaining = this.loadState() || this.duration;
+                this.isRunning = false;
+                this.interval = null;
+                this.updateDisplay();
+            }
+            
+            loadState() {
+                const saved = localStorage.getItem('gamingTimer');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    const elapsed = Math.floor((Date.now() - data.timestamp) / 1000);
+                    return Math.max(0, data.remaining - elapsed);
+                }
+                return null;
+            }
+            
+            saveState() {
+                localStorage.setItem('gamingTimer', JSON.stringify({
+                    remaining: this.remaining,
+                    timestamp: Date.now()
+                }));
+            }
+            
+            updateDisplay() {
+                const el = document.getElementById('gamingTimer');
+                if (el) {
+                    const mins = Math.floor(this.remaining / 60);
+                    const secs = this.remaining % 60;
+                    el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                }
+            }
+            
+            start() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.interval = setInterval(() => {
+                    this.remaining--;
+                    this.updateDisplay();
+                    this.saveState();
+                    
+                    if (this.remaining <= 0) {
+                        this.complete();
+                    }
+                }, 1000);
+            }
+            
+            pause() {
+                this.isRunning = false;
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                this.saveState();
+            }
+            
+            reset() {
+                this.pause();
+                this.remaining = this.duration;
+                this.updateDisplay();
+                localStorage.removeItem('gamingTimer');
+            }
+            
+            complete() {
+                this.pause();
+                this.remaining = 0;
+                this.updateDisplay();
+                
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Gaming time up! 🎮', {
+                        body: 'Your 30-minute gaming session is complete.',
+                        icon: '/icon-192.png'
+                    });
+                }
+                
+                localStorage.removeItem('gamingTimer');
+            }
+        }
+
         // Main App
         class App {
             constructor() {
                 this.db = new DB();
                 this.currentDate = new Date();
-                this.currentCategory = 'personal'; // 'personal' or 'work'
                 this.selectedMood = null;
+                this.currentPhase = localStorage.getItem('currentPhase') || null;
+                this.isManualOverride = localStorage.getItem('isManualOverride') === 'true';
+                this.viewAllData = false; // Default to phase-filtered view
+                this.isRestMode = localStorage.getItem('isRestMode') === 'true';
+                this.lastPhaseCheck = null;
+                this.schedule = [];
+                this.meditationTimer = new MeditationTimer(this);
+                this.gamingTimer = new GamingTimer(this);
+                
+                // Request notification permission
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+                
                 this.init();
             }
 
             async init() {
                 await this.db.init();
-                this.updateTime();
-                await this.renderTasks();
-                await this.renderNotes();
-                await this.renderMoodHistory();
-                await this.renderList();
+                await this.db.initDefaultSchedule();
+                this.schedule = await this.db.getAll('schedule');
                 
-                // Initialize toggle UI
-                document.getElementById('personalLabel').classList.add('text-primary');
+                // Load persisted state
+                if (this.isManualOverride && this.currentPhase) {
+                    // Keep manual override
+                } else {
+                    this.currentPhase = this.detectCurrentPhase();
+                }
+                
+                // Set rest mode state
+                await this.checkFatigueLevel();
+                if (this.isRestMode) {
+                    document.body.classList.add('rest-mode');
+                }
+                
+                
+                this.updateTime();
+                
+                // Load shutdown form if in SHUTDOWN phase
+                if (this.currentPhase === 'SHUTDOWN') {
+                    await this.loadShutdown();
+                }
+                
+                // Render everything - this will show/hide widgets based on phase
+                this.renderAll();
                 
                 setInterval(() => this.updateTime(), 1000);
+                setInterval(() => this.checkPhase(), 60000);
+                
+                // Restore timer states
+                this.meditationTimer.updateDisplay();
+                this.gamingTimer.updateDisplay();
+                
+                // Close menus on ESC or outside click
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        const settingsModal = document.getElementById('settingsModal');
+                        if (settingsModal && !settingsModal.classList.contains('hidden')) {
+                            this.closeSettings();
+                        }
+                        const phaseMenu = document.getElementById('phaseMenu');
+                        if (phaseMenu && !phaseMenu.classList.contains('hidden')) {
+                            this.toggleMenu();
+                        }
+                    }
+                });
+                
+                // Close menu on outside click
+                document.addEventListener('click', (e) => {
+                    const menu = document.getElementById('phaseMenu');
+                    const button = document.getElementById('menuButton');
+                    if (menu && button && !menu.contains(e.target) && !button.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            }
+            
+            phaseWidgets = {
+                MORNING_PLAN: ['time', 'tasks-widget', 'mood'],
+                RUN: ['time', 'tasks-widget', 'mood'],
+                WORK: ['time', 'meditation', 'tasks-widget', 'notes-work'],
+                SHUTDOWN: ['time', 'shutdown-form', 'mood'],
+                DECOMPRESS: ['time', 'watchlist', 'gaming-timer'],
+                COOK_TV: ['time', 'watchlist'],
+                DEEP_WORK: ['time', 'readinglist'],
+                CHECK_IN: ['time', 'mood'],
+                FREE_TIME: ['time']
+            }
+            
+            shouldShowWidget(widgetId) {
+                if (this.viewAllData) return true;
+                if (!this.currentPhase) return false; // Hide everything if no phase
+                const allowed = this.phaseWidgets[this.currentPhase]?.includes(widgetId) ?? false;
+                return allowed;
+            }
+            
+            getWidgetNamesForPhase(phase) {
+                const widgetMap = {
+                    'time': 'Time',
+                    'tasks-widget': 'Tasks',
+                    'notes-work': 'Notes',
+                    'mood': 'Mood',
+                    'mood-expanded': 'Mood',
+                    'meditation': 'Meditation Timer',
+                    'shutdown-form': 'Shutdown Form',
+                    'gaming-timer': 'Gaming Timer',
+                    'watchlist': 'Watch List',
+                    'readinglist': 'Reading List',
+                    'reading-protocol': 'Reading Protocol',
+                    'export': 'Export'
+                };
+                
+                const widgets = this.phaseWidgets[phase] || [];
+                return widgets.map(w => widgetMap[w] || w).filter(Boolean);
+            }
+            
+            toggleMenu() {
+                const menu = document.getElementById('phaseMenu');
+                if (menu) {
+                    menu.classList.toggle('hidden');
+                    if (!menu.classList.contains('hidden')) {
+                        this.renderPhaseMenu();
+                    }
+                }
+            }
+            
+            renderPhaseMenu() {
+                const now = new Date();
+                const currentDay = now.getDay();
+                const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                const todayBlocks = this.schedule
+                    .filter(block => block.activeDays.includes(currentDay))
+                    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+                
+                const currentBlock = todayBlocks.find(b => 
+                    currentTime >= b.startTime && currentTime < b.endTime
+                );
+                
+                // Update current phase label
+                const currentPhaseLabel = document.getElementById('currentPhaseLabel');
+                const menuCurrentPhase = document.getElementById('menuCurrentPhase');
+                const menuCurrentTime = document.getElementById('menuCurrentTime');
+                
+                if (currentBlock) {
+                    const label = currentBlock.label;
+                    if (currentPhaseLabel) currentPhaseLabel.textContent = label;
+                    if (menuCurrentPhase) menuCurrentPhase.textContent = label;
+                    if (menuCurrentTime) menuCurrentTime.textContent = `${currentBlock.startTime} - ${currentBlock.endTime}`;
+                } else {
+                    if (currentPhaseLabel) currentPhaseLabel.textContent = 'Free Time';
+                    if (menuCurrentPhase) menuCurrentPhase.textContent = 'Free Time';
+                    if (menuCurrentTime) menuCurrentTime.textContent = '';
+                }
+                
+                // Render phase items
+                const container = document.getElementById('phaseMenuItems');
+                if (!container) return;
+                
+                container.innerHTML = todayBlocks.map(block => {
+                    const isCurrent = this.currentPhase === block.phase;
+                    const isPast = currentTime >= block.endTime;
+                    
+                    let classes = 'w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] transition-colors flex items-center justify-between';
+                    if (isCurrent) {
+                        classes += ' bg-primary/10 text-primary font-medium';
+                    } else if (isPast) {
+                        classes += ' text-gray-500';
+                    } else {
+                        classes += ' text-gray-300';
+                    }
+                    
+                    const widgetNames = this.getWidgetNamesForPhase(block.phase);
+                    
+                    return `
+                        <button onclick="app.setPhase('${block.phase}', true); app.toggleMenu();" 
+                                class="${classes}">
+                            <div class="flex-1">
+                                <div class="font-medium">${block.label}</div>
+                                <div class="text-xs text-gray-500">${block.startTime} - ${block.endTime}</div>
+                                ${widgetNames.length > 0 ? `<div class="text-xs text-gray-600 mt-1">${widgetNames.join(', ')}</div>` : ''}
+                            </div>
+                            ${isCurrent ? '<span class="text-primary ml-2">●</span>' : ''}
+                        </button>
+                    `;
+                }).join('');
+                
+                // Add sync button if manual override
+                if (this.isManualOverride) {
+                    const syncBtn = document.createElement('button');
+                    syncBtn.onclick = () => {
+                        this.syncToSchedule();
+                        this.toggleMenu();
+                    };
+                    syncBtn.className = 'w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] transition-colors flex items-center gap-2 text-amber-400 mt-2 border-t border-[#2a2a2a] pt-2';
+                    syncBtn.innerHTML = '<span>Sync to Schedule</span>';
+                    container.appendChild(syncBtn);
+                }
+            }
+            
+            
+            dismissRestBanner() {
+                document.getElementById('restModeBanner').classList.add('hidden');
+            }
+            
+            detectCurrentPhase() {
+                const now = new Date();
+                const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                const currentDay = now.getDay();
+                
+                const todayBlocks = this.schedule
+                    .filter(block => block.activeDays.includes(currentDay))
+                    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+                
+                for (const block of todayBlocks) {
+                    if (currentTime >= block.startTime && currentTime < block.endTime) {
+                        return block.phase;
+                    }
+                }
+                
+                return 'FREE_TIME';
+            }
+            
+            checkPhase() {
+                if (this.isManualOverride) return;
+                
+                const newPhase = this.detectCurrentPhase();
+                if (newPhase !== this.currentPhase) {
+                    this.setPhase(newPhase, false);
+                }
+            }
+            
+            setPhase(phaseName, manual = false) {
+                this.currentPhase = phaseName;
+                this.isManualOverride = manual;
+                
+                if (manual) {
+                    localStorage.setItem('currentPhase', phaseName);
+                    localStorage.setItem('isManualOverride', 'true');
+                } else {
+                    localStorage.removeItem('currentPhase');
+                    localStorage.removeItem('isManualOverride');
+                }
+                
+                // Load shutdown form when entering SHUTDOWN phase
+                if (phaseName === 'SHUTDOWN') {
+                    this.loadShutdown();
+                }
+                
+                this.renderAll();
+            }
+            
+            syncToSchedule() {
+                this.isManualOverride = false;
+                localStorage.removeItem('currentPhase');
+                localStorage.removeItem('isManualOverride');
+                this.currentPhase = this.detectCurrentPhase();
+                this.renderAll();
+            }
+            
+            renderAll() {
+                // Force hide ALL widgets first, then show only what's needed
+                const allWidgetIds = [
+                    'time-widget', 'mood-widget', 'tasks-widget', 
+                    'notes-work', 'meditation', 'shutdown-form', 'gaming-timer', 
+                    'watchlist', 'readinglist', 'reading-protocol', 'export', 'list-widget'
+                ];
+                
+                allWidgetIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.display = 'none';
+                    }
+                });
+                
+                // Now show only widgets for current phase
+                const widgets = {
+                    'time-widget': 'time',
+                    'mood-widget': 'mood',
+                    'tasks-widget': 'tasks-widget',
+                    'notes-work': 'notes-work',
+                    'meditation': 'meditation',
+                    'shutdown-form': 'shutdown-form',
+                    'gaming-timer': 'gaming-timer',
+                    'watchlist': 'watchlist',
+                    'readinglist': 'readinglist',
+                    'reading-protocol': 'reading-protocol',
+                    'export': 'export'
+                };
+                
+                Object.entries(widgets).forEach(([id, widgetId]) => {
+                    const el = document.getElementById(id);
+                    if (el && this.shouldShowWidget(widgetId)) {
+                        el.style.display = 'block';
+                    }
+                });
+                
+                this.renderTasks();
+                this.renderNotes();
+                this.renderMoodHistory();
+                this.renderList();
+                this.updateReadingProtocol();
+                this.updateCategoryButton();
+                this.renderPhaseMenu();
+                
+                // Show/hide rest mode banner
+                const banner = document.getElementById('restModeBanner');
+                if (banner) {
+                    const dismissed = localStorage.getItem('restBannerDismissed') === 'true';
+                    if (this.isRestMode && !dismissed) {
+                        banner.classList.remove('hidden');
+                    } else {
+                        banner.classList.add('hidden');
+                    }
+                }
+            }
+            
+            dismissRestBanner() {
+                localStorage.setItem('restBannerDismissed', 'true');
+                const banner = document.getElementById('restModeBanner');
+                if (banner) {
+                    banner.classList.add('hidden');
+                }
+            }
+            
+            updateReadingProtocol() {
+                const protocolWidget = document.getElementById('reading-protocol');
+                if (!protocolWidget || !this.shouldShowWidget('reading-protocol')) return;
+                
+                const now = new Date();
+                const day = now.getDay();
+                const readingTypeEl = document.getElementById('readingType');
+                const restNoteEl = document.getElementById('restModeNote');
+                
+                if (this.isRestMode) {
+                    readingTypeEl.textContent = 'Fiction 📚 (Rest Mode)';
+                    restNoteEl.classList.remove('hidden');
+                } else {
+                    if ([1,3,5].includes(day)) {
+                        readingTypeEl.textContent = 'Technical Reading 📖';
+                    } else if ([2,4,6].includes(day)) {
+                        readingTypeEl.textContent = 'Fiction Reading 📚';
+                    } else {
+                        readingTypeEl.textContent = 'Rest or catch-up 📖📚';
+                    }
+                    restNoteEl.classList.add('hidden');
+                }
+            }
+            
+            async saveShutdown() {
+                const shipped = document.getElementById('shutdownShipped').value.trim();
+                const tomorrow = document.getElementById('shutdownTomorrow').value.trim();
+                
+                if (!shipped && !tomorrow) return;
+                
+                const today = new Date().toISOString().split('T')[0];
+                const existing = await this.db.getAll('work_notes');
+                const todayNote = existing.find(n => n.date === today);
+                
+                const noteData = {
+                    date: today,
+                    shipped: shipped,
+                    tomorrow: tomorrow,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (todayNote) {
+                    noteData.id = todayNote.id;
+                    await this.db.update('work_notes', noteData);
+                } else {
+                    await this.db.add('work_notes', noteData);
+                }
+                
+                document.getElementById('shutdownShipped').value = '';
+                document.getElementById('shutdownTomorrow').value = '';
+            }
+            
+            async loadShutdown() {
+                const today = new Date().toISOString().split('T')[0];
+                const existing = await this.db.getAll('work_notes');
+                const todayNote = existing.find(n => n.date === today);
+                
+                if (todayNote) {
+                    document.getElementById('shutdownShipped').value = todayNote.shipped || '';
+                    document.getElementById('shutdownTomorrow').value = todayNote.tomorrow || '';
+                }
+            }
+            
+            async exportData() {
+                const data = {
+                    export_date: new Date().toISOString(),
+                    tasks: await this.db.getAll('tasks'),
+                    notes: await this.db.getAll('notes'),
+                    moods: await this.db.getAll('moods'),
+                    daily_logs: await this.db.getAll('daily_logs'),
+                    work_notes: await this.db.getAll('work_notes'),
+                    readinglist: await this.db.getAll('readinglist'),
+                    watchlist: await this.db.getAll('watchlist'),
+                    schedule: await this.db.getAll('schedule')
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `personalos_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            openSettings() {
+                document.getElementById('settingsModal').classList.remove('hidden');
+                this.showSettingsTab('schedule');
+            }
+            
+            closeSettings() {
+                document.getElementById('settingsModal').classList.add('hidden');
+            }
+            
+            showSettingsTab(tabName) {
+                document.querySelectorAll('[data-tab]').forEach(btn => {
+                    btn.classList.remove('border-primary', 'text-white');
+                    btn.classList.add('text-gray-400');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('border-primary', 'text-white');
+                document.querySelector(`[data-tab="${tabName}"]`).classList.remove('text-gray-400');
+                
+                const content = document.getElementById('settingsContent');
+                if (tabName === 'schedule') {
+                    this.renderScheduleEditor(content);
+                } else if (tabName === 'preferences') {
+                    this.renderPreferences(content);
+                } else if (tabName === 'about') {
+                    this.renderAbout(content);
+                }
+            }
+            
+            async renderScheduleEditor(container) {
+                const blocks = await this.db.getAll('schedule');
+                container.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Schedule Blocks</h3>
+                            <button onclick="app.addScheduleBlock()" class="bg-primary hover:bg-primary/80 px-4 py-2 rounded-lg text-sm transition-colors">Add Block</button>
+                        </div>
+                        <div id="scheduleBlocks" class="space-y-3">
+                            ${blocks.map(block => this.renderScheduleBlock(block)).join('')}
+                        </div>
+                        <button onclick="app.resetSchedule()" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm transition-colors">Reset to Default</button>
+                    </div>
+                `;
+            }
+            
+            renderScheduleBlock(block) {
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                return `
+                    <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-4">
+                        <div class="grid md:grid-cols-2 gap-4 mb-3">
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Time</label>
+                                <input type="time" value="${block.startTime}" onchange="app.updateScheduleBlock(${block.id}, 'startTime', this.value)" class="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors">
+                                <span class="mx-2 text-gray-400">-</span>
+                                <input type="time" value="${block.endTime}" onchange="app.updateScheduleBlock(${block.id}, 'endTime', this.value)" class="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Label</label>
+                                <input type="text" value="${block.label}" onchange="app.updateScheduleBlock(${block.id}, 'label', this.value)" class="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs text-gray-400 mb-1 block">Active Days</label>
+                            <div class="flex gap-2">
+                                ${days.map((day, idx) => `
+                                    <label class="flex items-center gap-1 text-xs">
+                                        <input type="checkbox" ${block.activeDays.includes(idx) ? 'checked' : ''} 
+                                               onchange="app.toggleScheduleDay(${block.id}, ${idx})">
+                                        ${day}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <button onclick="app.deleteScheduleBlock(${block.id})" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+                    </div>
+                `;
+            }
+            
+            async updateScheduleBlock(id, field, value) {
+                const blocks = await this.db.getAll('schedule');
+                const block = blocks.find(b => b.id === id);
+                if (block) {
+                    block[field] = value;
+                    await this.db.update('schedule', block);
+                    this.schedule = await this.db.getAll('schedule');
+                }
+            }
+            
+            async toggleScheduleDay(blockId, dayIndex) {
+                const blocks = await this.db.getAll('schedule');
+                const block = blocks.find(b => b.id === blockId);
+                if (block) {
+                    const idx = block.activeDays.indexOf(dayIndex);
+                    if (idx > -1) {
+                        block.activeDays.splice(idx, 1);
+                    } else {
+                        block.activeDays.push(dayIndex);
+                    }
+                    await this.db.update('schedule', block);
+                    this.schedule = await this.db.getAll('schedule');
+                    this.showSettingsTab('schedule');
+                }
+            }
+            
+            async deleteScheduleBlock(id) {
+                if (!confirm('Delete this schedule block?')) return;
+                await this.db.delete('schedule', id);
+                this.schedule = await this.db.getAll('schedule');
+                this.showSettingsTab('schedule');
+            }
+            
+            async resetSchedule() {
+                if (!confirm('Reset schedule to default? This will delete all custom blocks.')) return;
+                const blocks = await this.db.getAll('schedule');
+                for (const block of blocks) {
+                    await this.db.delete('schedule', block.id);
+                }
+                await this.db.initDefaultSchedule();
+                this.schedule = await this.db.getAll('schedule');
+                this.showSettingsTab('schedule');
+            }
+            
+            async addScheduleBlock() {
+                const modal = document.getElementById('modal');
+                const title = document.getElementById('modalTitle');
+                const content = document.getElementById('modalContent');
+                const submit = document.getElementById('modalSubmit');
+                
+                title.textContent = 'Add Schedule Block';
+                content.innerHTML = `
+                    <input id="blockStartTime" type="time" placeholder="Start Time" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <input id="blockEndTime" type="time" placeholder="End Time" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <input id="blockPhase" type="text" placeholder="Phase (e.g., WORK)" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <input id="blockLabel" type="text" placeholder="Label" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                `;
+                
+                modal.classList.remove('hidden');
+                
+                submit.onclick = async () => {
+                    const startTime = document.getElementById('blockStartTime').value;
+                    const endTime = document.getElementById('blockEndTime').value;
+                    const phase = document.getElementById('blockPhase').value.trim();
+                    const label = document.getElementById('blockLabel').value.trim();
+                    
+                    if (startTime && endTime && phase && label) {
+                        await this.db.add('schedule', {
+                            startTime,
+                            endTime,
+                            phase,
+                            label,
+                            description: '',
+                            activeDays: [1,2,3,4,5],
+                            order: 999
+                        });
+                        this.schedule = await this.db.getAll('schedule');
+                        this.closeModal();
+                        this.showSettingsTab('schedule');
+                    }
+                };
+            }
+            
+            renderPreferences(container) {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Notifications</h3>
+                            <label class="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                <input type="checkbox" id="notificationsEnabled" onchange="localStorage.setItem('notificationsEnabled', this.checked)" class="w-4 h-4 accent-primary">
+                                <span>Enable browser notifications</span>
+                            </label>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">View Options</h3>
+                            <label class="flex items-center gap-3 p-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                <input type="checkbox" id="viewAllDataSetting" onchange="app.toggleViewAllSetting(this.checked)" class="w-4 h-4 accent-primary">
+                                <span>Show all widgets regardless of phase</span>
+                            </label>
+                        </div>
+                    </div>
+                `;
+                const notificationsCheckbox = document.getElementById('notificationsEnabled');
+                const viewAllCheckbox = document.getElementById('viewAllDataSetting');
+                if (notificationsCheckbox) {
+                    notificationsCheckbox.checked = localStorage.getItem('notificationsEnabled') === 'true';
+                }
+                if (viewAllCheckbox) {
+                    viewAllCheckbox.checked = localStorage.getItem('viewAllData') === 'true';
+                }
+            }
+            
+            toggleViewAllSetting(enabled) {
+                this.viewAllData = enabled;
+                localStorage.setItem('viewAllData', enabled.toString());
+                this.renderAll();
+            }
+            
+            renderAbout(container) {
+                container.innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">PersonalOS</h3>
+                            <p class="text-gray-400 text-sm">Version 2.0</p>
+                            <p class="text-gray-400 text-sm mt-2">Database Version: ${this.db.version}</p>
+                        </div>
+                        <div>
+                            <button onclick="app.exportData()" class="bg-primary hover:bg-primary/80 px-4 py-2 rounded">Export Data</button>
+                        </div>
+                    </div>
+                `;
             }
 
             updateTime() {
@@ -303,32 +1290,6 @@
                 });
             }
 
-            toggleCategory() {
-                this.currentCategory = this.currentCategory === 'personal' ? 'work' : 'personal';
-                
-                // Update toggle UI
-                const toggle = document.getElementById('categoryToggle');
-                const knob = document.getElementById('categoryToggleKnob');
-                const personalLabel = document.getElementById('personalLabel');
-                const workLabel = document.getElementById('workLabel');
-                
-                if (this.currentCategory === 'work') {
-                    toggle.classList.add('bg-primary');
-                    knob.style.transform = 'translateX(28px)';
-                    personalLabel.classList.remove('text-primary');
-                    workLabel.classList.add('text-primary');
-                } else {
-                    toggle.classList.remove('bg-primary');
-                    knob.style.transform = 'translateX(0)';
-                    personalLabel.classList.add('text-primary');
-                    workLabel.classList.remove('text-primary');
-                }
-                
-                // Re-render everything
-                this.renderTasks();
-                this.renderNotes();
-                this.renderList();
-            }
 
             selectMood(emoji) {
                 this.selectedMood = emoji;
@@ -354,14 +1315,28 @@
                 }
                 
                 const today = new Date().toISOString().split('T')[0];
+                const timestamp = new Date().toISOString();
                 
+                // Save to moods (backwards compatibility)
                 await this.db.add('moods', {
                     date: today,
                     physical: parseInt(physical),
                     mental: parseInt(mental),
                     mood: mood,
-                    timestamp: new Date().toISOString()
+                    timestamp: timestamp
                 });
+                
+                // Also save to daily_logs
+                await this.db.add('daily_logs', {
+                    date: today,
+                    physical: parseInt(physical),
+                    mental: parseInt(mental),
+                    mood: mood,
+                    timestamp: timestamp
+                });
+                
+                // Check fatigue level
+                this.checkFatigueLevel();
                 
                 // Reset form
                 document.getElementById('physicalSlider').value = 3;
@@ -374,8 +1349,29 @@
                     btn.style.transform = '';
                 });
                 
-                // Refresh history
                 await this.renderMoodHistory();
+            }
+            
+            async checkFatigueLevel() {
+                const logs = await this.db.getAll('daily_logs');
+                if (logs.length === 0) {
+                    this.isRestMode = false;
+                    return;
+                }
+                
+                const latest = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                const wasRestMode = this.isRestMode;
+                this.isRestMode = latest.mental >= 4;
+                
+                if (this.isRestMode !== wasRestMode) {
+                    localStorage.setItem('isRestMode', this.isRestMode.toString());
+                    if (this.isRestMode) {
+                        document.body.classList.add('rest-mode');
+                    } else {
+                        document.body.classList.remove('rest-mode');
+                        localStorage.removeItem('restBannerDismissed');
+                    }
+                }
             }
 
             async renderMoodHistory() {
@@ -385,6 +1381,7 @@
                     .slice(0, 7);
                 
                 const container = document.getElementById('moodHistory');
+                if (!container) return;
                 
                 if (moods.length === 0) {
                     container.innerHTML = '<div class="text-gray-500 text-xs">No mood entries yet</div>';
@@ -412,24 +1409,24 @@
 
             async renderTasks() {
                 const allTasks = await this.db.getAll('tasks');
-                const tasks = allTasks.filter(t => (t.category || 'personal') === this.currentCategory);
+                
                 const container = document.getElementById('tasks');
-                
-                if (tasks.length === 0) {
-                    container.innerHTML = '<div class="text-gray-500 text-sm">No tasks yet</div>';
-                    return;
+                if (container && this.shouldShowWidget('tasks-widget')) {
+                    if (allTasks.length === 0) {
+                        container.innerHTML = '<div class="text-gray-500 text-sm">No tasks yet</div>';
+                    } else {
+                        container.innerHTML = allTasks.map(task => `
+                            <div class="flex items-center gap-3 group">
+                                <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                                       onchange="app.toggleTask(${task.id})"
+                                       class="w-4 h-4 accent-primary cursor-pointer">
+                                <span class="text-gray-300 flex-1 ${task.completed ? 'line-through opacity-50' : ''}">${task.text}</span>
+                                <button onclick="app.deleteTask(${task.id})" 
+                                        class="text-red-500 opacity-0 group-hover:opacity-100 text-sm">×</button>
+                            </div>
+                        `).join('');
+                    }
                 }
-                
-                container.innerHTML = tasks.map(task => `
-                    <div class="flex items-center gap-3 group">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} 
-                               onchange="app.toggleTask(${task.id})"
-                               class="w-4 h-4 accent-primary cursor-pointer">
-                        <span class="text-gray-300 flex-1 ${task.completed ? 'line-through opacity-50' : ''}">${task.text}</span>
-                        <button onclick="app.deleteTask(${task.id})" 
-                                class="text-red-500 opacity-0 group-hover:opacity-100 text-sm">×</button>
-                    </div>
-                `).join('');
             }
 
             async toggleTask(id) {
@@ -454,7 +1451,7 @@
                 const submit = document.getElementById('modalSubmit');
                 
                 title.textContent = 'Add Task';
-                content.innerHTML = '<input id="taskInput" type="text" placeholder="Task description" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white">';
+                content.innerHTML = '<input id="taskInput" type="text" placeholder="Task description" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors">';
                 
                 modal.classList.remove('hidden');
                 setTimeout(() => document.getElementById('taskInput').focus(), 100);
@@ -464,8 +1461,7 @@
                     if (input) {
                         await this.db.add('tasks', { 
                             text: input, 
-                            completed: false,
-                            category: this.currentCategory
+                            completed: false
                         });
                         await this.renderTasks();
                         this.closeModal();
@@ -475,22 +1471,22 @@
 
             async renderNotes() {
                 const allNotes = await this.db.getAll('notes');
-                const notes = allNotes.filter(n => (n.category || 'personal') === this.currentCategory);
-                const container = document.getElementById('notes');
+                const container = document.getElementById('notes-work-list');
                 
-                if (notes.length === 0) {
-                    container.innerHTML = '<div class="text-gray-500 text-sm">No notes yet</div>';
-                    return;
+                if (container && this.shouldShowWidget('notes-work')) {
+                    if (allNotes.length === 0) {
+                        container.innerHTML = '<div class="text-gray-500 text-sm">No notes yet</div>';
+                    } else {
+                        container.innerHTML = allNotes.map(note => `
+                            <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative">
+                                <button onclick="app.deleteNote(${note.id})" 
+                                        class="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 text-sm">×</button>
+                                <div class="font-medium text-sm mb-1">${note.title}</div>
+                                <div class="text-gray-400 text-xs">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
+                            </div>
+                        `).join('');
+                    }
                 }
-                
-                container.innerHTML = notes.map(note => `
-                    <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative">
-                        <button onclick="app.deleteNote(${note.id})" 
-                                class="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 text-sm">×</button>
-                        <div class="font-medium text-sm mb-1">${note.title}</div>
-                        <div class="text-gray-400 text-xs">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
-                    </div>
-                `).join('');
             }
 
             async deleteNote(id) {
@@ -506,8 +1502,8 @@
                 
                 title.textContent = 'Add Note';
                 content.innerHTML = `
-                    <input id="noteTitle" type="text" placeholder="Note title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
-                    <textarea id="noteContent" placeholder="Note content" rows="4" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white"></textarea>
+                    <input id="noteTitle" type="text" placeholder="Note title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <textarea id="noteContent" placeholder="Note content" rows="4" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors"></textarea>
                 `;
                 
                 modal.classList.remove('hidden');
@@ -519,8 +1515,7 @@
                     if (noteTitle && noteContent) {
                         await this.db.add('notes', { 
                             title: noteTitle, 
-                            content: noteContent,
-                            category: this.currentCategory
+                            content: noteContent
                         });
                         await this.renderNotes();
                         this.closeModal();
@@ -529,24 +1524,102 @@
             }
 
             closeModal() {
-                document.getElementById('modal').classList.add('hidden');
+                const modal = document.getElementById('modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
             }
 
-            async renderList() {
-                const allItems = await this.db.getAll('list');
-                const items = allItems.filter(i => (i.category || 'personal') === this.currentCategory);
-                const container = document.getElementById('list');
+            async renderReadingList() {
+                if (!this.shouldShowWidget('readinglist')) return;
                 
-                if (items.length === 0) {
-                    container.innerHTML = '<div class="text-gray-500 text-sm md:col-span-2">No items yet</div>';
+                const allBooks = await this.db.getAll('readinglist');
+                
+                // Rest mode filtering during DEEP_WORK
+                let filteredBooks = allBooks;
+                if (this.isRestMode && this.currentPhase === 'DEEP_WORK') {
+                    filteredBooks = books.filter(b => b.category === 'fiction');
+                }
+                
+                const container = document.getElementById('readingList');
+                if (!container) return;
+                
+                if (filteredBooks.length === 0) {
+                    container.innerHTML = '<div class="text-gray-500 text-sm">No books yet</div>';
                     return;
                 }
                 
-                // Separate completed and pending
-                const pending = items.filter(i => !i.completed);
-                const completed = items.filter(i => i.completed);
+                const pending = filteredBooks.filter(b => !b.completed);
+                const completed = filteredBooks.filter(b => b.completed);
                 
-                container.innerHTML = [...pending, ...completed].map(item => `
+                container.innerHTML = [...pending, ...completed].map(book => `
+                    <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative ${book.completed ? 'opacity-50' : ''}">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${book.completed ? 'checked' : ''} 
+                                   onchange="app.toggleBook(${book.id})"
+                                   class="w-4 h-4 mt-1 accent-primary cursor-pointer">
+                            <div class="flex-1 cursor-pointer" onclick="app.editBook(${book.id})">
+                                <div class="font-medium text-sm mb-1 ${book.completed ? 'line-through' : ''}">${book.title}</div>
+                                <div class="text-xs text-gray-500 flex items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px;">menu_book</span>
+                                    ${book.category === 'fiction' ? 'Fiction 📚' : 'Technical 📖'}
+                                </div>
+                                ${book.notes ? `<div class="text-xs text-gray-400 mt-1">${book.notes}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            async renderWatchList() {
+                if (!this.shouldShowWidget('watchlist')) return;
+                
+                const allShows = await this.db.getAll('watchlist');
+                const container = document.getElementById('watchList');
+                if (!container) return;
+                
+                if (allShows.length === 0) {
+                    container.innerHTML = '<div class="text-gray-500 text-sm">No shows yet</div>';
+                    return;
+                }
+                
+                const pending = allShows.filter(s => !s.completed);
+                const completed = allShows.filter(s => s.completed);
+                
+                container.innerHTML = [...pending, ...completed].map(show => `
+                    <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative ${show.completed ? 'opacity-50' : ''}">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${show.completed ? 'checked' : ''} 
+                                   onchange="app.toggleShow(${show.id})"
+                                   class="w-4 h-4 mt-1 accent-primary cursor-pointer">
+                            <div class="flex-1 cursor-pointer" onclick="app.editShow(${show.id})">
+                                <div class="font-medium text-sm mb-1 ${show.completed ? 'line-through' : ''}">${show.title}</div>
+                                <div class="text-xs text-gray-500 flex items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 16px;">movie</span>
+                                    Show/Movie 🎬
+                                </div>
+                                ${show.notes ? `<div class="text-xs text-gray-400 mt-1">${show.notes}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async renderList() {
+                // Legacy support - try to render old list if containers don't exist
+                const oldContainer = document.getElementById('list');
+                if (oldContainer) {
+                const allItems = await this.db.getAll('list');
+                
+                if (allItems.length === 0) {
+                        oldContainer.innerHTML = '<div class="text-gray-500 text-sm md:col-span-2">No items yet</div>';
+                    return;
+                }
+                
+                const pending = allItems.filter(i => !i.completed);
+                const completed = allItems.filter(i => i.completed);
+                
+                    oldContainer.innerHTML = [...pending, ...completed].map(item => `
                     <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative ${item.completed ? 'opacity-50' : ''}">
                         <div class="flex items-start gap-3">
                             <input type="checkbox" ${item.completed ? 'checked' : ''} 
@@ -563,6 +1636,10 @@
                         </div>
                     </div>
                 `).join('');
+                } else {
+                    await this.renderReadingList();
+                    await this.renderWatchList();
+                }
             }
 
             async toggleListItem(id) {
@@ -574,8 +1651,190 @@
                     await this.renderList();
                 }
             }
+            
+            async toggleBook(id) {
+                const books = await this.db.getAll('readinglist');
+                const book = books.find(b => b.id === id);
+                if (book) {
+                    book.completed = !book.completed;
+                    await this.db.update('readinglist', book);
+                    await this.renderReadingList();
+                }
+            }
+            
+            async toggleShow(id) {
+                const shows = await this.db.getAll('watchlist');
+                const show = shows.find(s => s.id === id);
+                if (show) {
+                    show.completed = !show.completed;
+                    await this.db.update('watchlist', show);
+                    await this.renderWatchList();
+                }
+            }
+
+            addBook() {
+                const modal = document.getElementById('modal');
+                const title = document.getElementById('modalTitle');
+                const content = document.getElementById('modalContent');
+                const submit = document.getElementById('modalSubmit');
+                
+                title.textContent = 'Add Book';
+                content.innerHTML = `
+                    <input id="bookTitle" type="text" placeholder="Book title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <div class="mb-3">
+                        <label class="text-sm text-gray-400 mb-2 block">Category</label>
+                        <div class="flex gap-3">
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" name="bookCategory" value="technical" checked class="mr-2">
+                                <span>Technical 📖</span>
+                            </label>
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" name="bookCategory" value="fiction" class="mr-2">
+                                <span>Fiction 📚</span>
+                            </label>
+                        </div>
+                    </div>
+                    <textarea id="bookNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors"></textarea>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => document.getElementById('bookTitle').focus(), 100);
+                
+                submit.onclick = async () => {
+                    const bookTitle = document.getElementById('bookTitle').value.trim();
+                    const bookCategory = document.querySelector('input[name="bookCategory"]:checked').value;
+                    const bookNotes = document.getElementById('bookNotes').value.trim();
+                    
+                    if (bookTitle) {
+                        await this.db.add('readinglist', { 
+                            title: bookTitle,
+                            category: bookCategory,
+                            notes: bookNotes,
+                            completed: false
+                        });
+                        await this.renderReadingList();
+                        this.closeModal();
+                    }
+                };
+            }
+            
+            async editBook(id) {
+                const books = await this.db.getAll('readinglist');
+                const book = books.find(b => b.id === id);
+                if (!book) return;
+                
+                const modal = document.getElementById('modal');
+                const title = document.getElementById('modalTitle');
+                const content = document.getElementById('modalContent');
+                const submit = document.getElementById('modalSubmit');
+                
+                title.textContent = 'Edit Book';
+                content.innerHTML = `
+                    <input id="bookTitle" type="text" value="${book.title}" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <div class="mb-3">
+                        <label class="text-sm text-gray-400 mb-2 block">Category</label>
+                        <div class="flex gap-3">
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" name="bookCategory" value="technical" ${book.category === 'technical' ? 'checked' : ''} class="mr-2">
+                                <span>Technical 📖</span>
+                            </label>
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" name="bookCategory" value="fiction" ${book.category === 'fiction' ? 'checked' : ''} class="mr-2">
+                                <span>Fiction 📚</span>
+                            </label>
+                        </div>
+                    </div>
+                    <textarea id="bookNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors">${book.notes || ''}</textarea>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => document.getElementById('bookTitle').focus(), 100);
+                
+                submit.onclick = async () => {
+                    const bookTitle = document.getElementById('bookTitle').value.trim();
+                    const bookCategory = document.querySelector('input[name="bookCategory"]:checked').value;
+                    const bookNotes = document.getElementById('bookNotes').value.trim();
+                    
+                    if (bookTitle) {
+                        book.title = bookTitle;
+                        book.category = bookCategory;
+                        book.notes = bookNotes;
+                        await this.db.update('readinglist', book);
+                        await this.renderReadingList();
+                        this.closeModal();
+                    }
+                };
+            }
+            
+            addShow() {
+                const modal = document.getElementById('modal');
+                const title = document.getElementById('modalTitle');
+                const content = document.getElementById('modalContent');
+                const submit = document.getElementById('modalSubmit');
+                
+                title.textContent = 'Add Show/Movie';
+                content.innerHTML = `
+                    <input id="showTitle" type="text" placeholder="Title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <textarea id="showNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors"></textarea>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => document.getElementById('showTitle').focus(), 100);
+                
+                submit.onclick = async () => {
+                    const showTitle = document.getElementById('showTitle').value.trim();
+                    const showNotes = document.getElementById('showNotes').value.trim();
+                    
+                    if (showTitle) {
+                        await this.db.add('watchlist', { 
+                            title: showTitle,
+                            notes: showNotes,
+                            completed: false
+                        });
+                        await this.renderWatchList();
+                        this.closeModal();
+                    }
+                };
+            }
+            
+            async editShow(id) {
+                const shows = await this.db.getAll('watchlist');
+                const show = shows.find(s => s.id === id);
+                if (!show) return;
+                
+                const modal = document.getElementById('modal');
+                const title = document.getElementById('modalTitle');
+                const content = document.getElementById('modalContent');
+                const submit = document.getElementById('modalSubmit');
+                
+                title.textContent = 'Edit Show/Movie';
+                content.innerHTML = `
+                    <input id="showTitle" type="text" value="${show.title}" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
+                    <textarea id="showNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors">${show.notes || ''}</textarea>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => document.getElementById('showTitle').focus(), 100);
+                
+                submit.onclick = async () => {
+                    const showTitle = document.getElementById('showTitle').value.trim();
+                    const showNotes = document.getElementById('showNotes').value.trim();
+                    
+                    if (showTitle) {
+                        show.title = showTitle;
+                        show.notes = showNotes;
+                        await this.db.update('watchlist', show);
+                        await this.renderWatchList();
+                        this.closeModal();
+                    }
+                };
+            }
 
             addListItem() {
+                // Legacy support - redirect to appropriate method
+                const container = document.getElementById('list');
+                if (container) {
+                    // Old combined list - keep old behavior
                 const modal = document.getElementById('modal');
                 const title = document.getElementById('modalTitle');
                 const content = document.getElementById('modalContent');
@@ -583,23 +1842,23 @@
                 
                 title.textContent = 'Add to List';
                 content.innerHTML = `
-                    <input id="itemTitle" type="text" placeholder="Title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
+                        <input id="itemTitle" type="text" placeholder="Title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
                     <div class="mb-3">
                         <label class="text-sm text-gray-400 mb-2 block">Type</label>
                         <div class="flex gap-3">
-                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
                                 <input type="radio" name="itemType" value="book" checked class="mr-2">
                                 <span class="material-symbols-outlined align-middle" style="font-size: 18px;">menu_book</span>
                                 <span class="align-middle">Book</span>
                             </label>
-                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                                <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
                                 <input type="radio" name="itemType" value="show" class="mr-2">
                                 <span class="material-symbols-outlined align-middle" style="font-size: 18px;">movie</span>
                                 <span class="align-middle">Show/Movie</span>
                             </label>
                         </div>
                     </div>
-                    <textarea id="itemNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white"></textarea>
+                        <textarea id="itemNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors"></textarea>
                 `;
                 
                 modal.classList.remove('hidden');
@@ -615,13 +1874,13 @@
                             title: itemTitle,
                             type: itemType,
                             notes: itemNotes,
-                            completed: false,
-                            category: this.currentCategory
+                            completed: false
                         });
                         await this.renderList();
                         this.closeModal();
                     }
                 };
+                }
             }
 
             async editListItem(id) {
@@ -636,23 +1895,23 @@
                 
                 title.textContent = 'Edit Item';
                 content.innerHTML = `
-                    <input id="itemTitle" type="text" value="${item.title}" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
+                    <input id="itemTitle" type="text" value="${item.title}" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white mb-3 focus:outline-none focus:border-primary transition-colors">
                     <div class="mb-3">
                         <label class="text-sm text-gray-400 mb-2 block">Type</label>
                         <div class="flex gap-3">
-                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
                                 <input type="radio" name="itemType" value="book" ${item.type === 'book' ? 'checked' : ''} class="mr-2">
                                 <span class="material-symbols-outlined align-middle" style="font-size: 18px;">menu_book</span>
                                 <span class="align-middle">Book</span>
                             </label>
-                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 cursor-pointer hover:border-primary transition-colors">
+                            <label class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-primary transition-colors">
                                 <input type="radio" name="itemType" value="show" ${item.type === 'show' ? 'checked' : ''} class="mr-2">
                                 <span class="material-symbols-outlined align-middle" style="font-size: 18px;">movie</span>
                                 <span class="align-middle">Show/Movie</span>
                             </label>
                         </div>
                     </div>
-                    <textarea id="itemNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white">${item.notes || ''}</textarea>
+                    <textarea id="itemNotes" placeholder="Notes (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary transition-colors">${item.notes || ''}</textarea>
                 `;
                 
                 modal.classList.remove('hidden');
