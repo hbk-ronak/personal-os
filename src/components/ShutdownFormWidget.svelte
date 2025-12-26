@@ -55,9 +55,9 @@
     }
 </script>
 
-<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
     <h2 class="text-xl font-semibold mb-4">Work Shutdown</h2>
-    <div class="grid md:grid-cols-2 gap-4">
+    <div class="space-y-4">
         <div>
             <label class="text-sm text-gray-400 mb-2 block">What did you ship today?</label>
             <textarea 

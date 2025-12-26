@@ -101,7 +101,7 @@
     <RestModeBanner />
     
     <!-- Top Navigation -->
-    <div class="max-w-6xl mx-auto mb-8">
+    <div class="max-w-2xl mx-auto mb-8">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-3xl md:text-4xl font-bold text-primary mb-1">PersonalOS</h1>
@@ -116,11 +116,11 @@
         </div>
     </div>
     
-    <!-- Grid Container -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto mb-8 items-stretch">
+    <!-- Grid Container - Single column for all screen sizes -->
+    <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto mb-8 items-stretch">
         
         <!-- Motivation Widget - Always visible -->
-        <div class="md:col-span-2">
+        <div>
             <MotivationWidget />
         </div>
         

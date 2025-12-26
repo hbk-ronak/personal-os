@@ -2,7 +2,7 @@
     import { exportData } from '../lib/export.js';
 </script>
 
-<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
     <h2 class="text-xl font-semibold mb-4">Export Data</h2>
     <button 
         on:click={exportData}

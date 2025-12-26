@@ -71,7 +71,7 @@
     $: selectedMoodValue = $selectedMood;
 </script>
 
-<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
+<div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold">Mood Tracker</h2>
         <button 
@@ -82,7 +82,7 @@
         </button>
     </div>
     
-    <div class="grid md:grid-cols-2 gap-6">
+    <div class="space-y-6">
         <!-- Input Section -->
         <div class="space-y-4">
             <!-- Physical Level -->

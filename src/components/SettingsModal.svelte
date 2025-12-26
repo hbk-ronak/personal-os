@@ -161,7 +161,7 @@
                         <div class="space-y-3">
                             {#each scheduleBlocks as block}
                                 <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-4">
-                                    <div class="grid md:grid-cols-2 gap-4 mb-3">
+                                    <div class="space-y-4 mb-3">
                                         <div>
                                             <label class="text-xs text-gray-400 mb-1 block">Time</label>
                                             <input 
