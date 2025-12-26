@@ -34,6 +34,25 @@
 </head>
 <body class="bg-black text-white min-h-screen p-4">
     
+    <!-- Landing Section -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <div class="bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-8 md:p-12 text-center">
+            <h1 class="text-3xl md:text-5xl font-bold text-primary mb-4">PersonalOS</h1>
+            <p class="text-2xl md:text-3xl font-semibold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-primary mb-6">
+                PERSEVERANCE AND FAITH
+            </p>
+            
+            <!-- Work/Personal Toggle -->
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-sm font-medium" id="personalLabel">Personal</span>
+                <button onclick="app.toggleCategory()" class="relative w-14 h-7 bg-[#2a2a2a] rounded-full transition-colors duration-200" id="categoryToggle">
+                    <div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200" id="categoryToggleKnob"></div>
+                </button>
+                <span class="text-sm font-medium" id="workLabel">Work</span>
+            </div>
+        </div>
+    </div>
+    
     <!-- Grid Container -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
         
@@ -43,27 +62,52 @@
             <div id="date" class="text-gray-400">Friday, December 27</div>
         </div>
         
-        <!-- Calendar Widget -->
-        <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Calendar</h2>
-                <div class="flex gap-2">
-                    <button onclick="app.addEvent()" class="text-primary hover:text-primary/80 text-2xl">+</button>
-                    <button onclick="app.goToToday()" class="text-primary hover:text-primary/80">Today</button>
-                </div>
-            </div>
-            <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm">
-                <!-- Calendar will be generated here -->
-            </div>
-        </div>
-        
-        <!-- Events Widget -->
+        <!-- Mood Tracker Widget -->
         <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px] md:col-span-2">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Upcoming Events</h2>
+                <h2 class="text-xl font-semibold">Mood Tracker</h2>
+                <button onclick="app.saveMood()" class="text-primary hover:text-primary/80 text-sm" id="saveMoodBtn">Save</button>
             </div>
-            <div id="events" class="space-y-3">
-                <!-- Events will be rendered here -->
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Input Section -->
+                <div class="space-y-4">
+                    <!-- Physical Level -->
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Physical: <span id="physicalValue" class="text-primary">3</span></label>
+                        <input type="range" min="1" max="5" value="3" id="physicalSlider" 
+                               oninput="document.getElementById('physicalValue').textContent = this.value"
+                               class="w-full h-2 bg-[#2a2a2a] rounded-lg appearance-none cursor-pointer accent-primary">
+                    </div>
+                    
+                    <!-- Mental Level -->
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Mental: <span id="mentalValue" class="text-primary">3</span></label>
+                        <input type="range" min="1" max="5" value="3" id="mentalSlider" 
+                               oninput="document.getElementById('mentalValue').textContent = this.value"
+                               class="w-full h-2 bg-[#2a2a2a] rounded-lg appearance-none cursor-pointer accent-primary">
+                    </div>
+                    
+                    <!-- Mood Emoji -->
+                    <div>
+                        <label class="text-sm text-gray-400 mb-2 block">Mood</label>
+                        <div class="flex gap-2 justify-between">
+                            <button onclick="app.selectMood('😢')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😢">😢</button>
+                            <button onclick="app.selectMood('😕')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😕">😕</button>
+                            <button onclick="app.selectMood('😐')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😐">😐</button>
+                            <button onclick="app.selectMood('🙂')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="🙂">🙂</button>
+                            <button onclick="app.selectMood('😄')" class="mood-btn text-3xl p-2 rounded hover:bg-[#2a2a2a] transition-colors" data-mood="😄">😄</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics Section -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-400 mb-3">Recent History</h3>
+                    <div id="moodHistory" class="space-y-2 max-h-[180px] overflow-y-auto">
+                        <!-- Mood history will be rendered here -->
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -154,6 +198,9 @@
                         if (!db.objectStoreNames.contains('events')) {
                             db.createObjectStore('events', { keyPath: 'id', autoIncrement: true });
                         }
+                        if (!db.objectStoreNames.contains('moods')) {
+                            db.createObjectStore('moods', { keyPath: 'id', autoIncrement: true });
+                        }
                     };
                 });
             }
@@ -204,16 +251,20 @@
             constructor() {
                 this.db = new DB();
                 this.currentDate = new Date();
+                this.currentCategory = 'personal'; // 'personal' or 'work'
+                this.selectedMood = null;
                 this.init();
             }
 
             async init() {
                 await this.db.init();
                 this.updateTime();
-                await this.renderCalendar();
                 await this.renderTasks();
                 await this.renderNotes();
-                await this.renderEvents();
+                await this.renderMoodHistory();
+                
+                // Initialize toggle UI
+                document.getElementById('personalLabel').classList.add('text-primary');
                 
                 setInterval(() => this.updateTime(), 1000);
             }
@@ -236,112 +287,115 @@
                 });
             }
 
-            async renderCalendar() {
-                try {
-                    const cal = document.getElementById('calendar');
-                    if (!cal) return;
-                    
-                    const year = this.currentDate.getFullYear();
-                    const month = this.currentDate.getMonth();
-                    const today = new Date();
-                    
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const daysInPrevMonth = new Date(year, month, 0).getDate();
-                    
-                    // Get all events for the month
-                    let events = [];
-                    try {
-                        events = await this.db.getAll('events') || [];
-                    } catch (e) {
-                        console.error('Error loading events:', e);
-                    }
-                    
-                    const eventDays = new Set();
-                    
-                    events.forEach(event => {
-                        try {
-                            const occurrences = this.getEventOccurrences(event, year, month);
-                            occurrences.forEach(date => eventDays.add(date.getDate()));
-                        } catch (e) {
-                            console.error('Error processing event:', e);
-                        }
-                    });
-                    
-                    let html = '';
-                    
-                    // Day headers
-                    ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
-                        html += `<div class="text-gray-500">${day}</div>`;
-                    });
-                    
-                    // Previous month days
-                    for (let i = firstDay - 1; i >= 0; i--) {
-                        html += `<div class="text-gray-600">${daysInPrevMonth - i}</div>`;
-                    }
-                    
-                    // Current month days
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                        const hasEvent = eventDays.has(day);
-                        const classes = isToday ? 'text-primary font-bold' : 'text-gray-400';
-                        const indicator = hasEvent ? `<div class="w-1 h-1 bg-primary rounded-full mx-auto mt-1"></div>` : '';
-                        html += `<div class="${classes}">${day}${indicator}</div>`;
-                    }
-                    
-                    cal.innerHTML = html;
-                    console.log('Calendar rendered with', html.length, 'characters');
-                } catch (e) {
-                    console.error('Error rendering calendar:', e);
-                }
-            }
-
-            getEventOccurrences(event, year, month) {
-                const occurrences = [];
-                const eventDate = new Date(event.date);
-                const startOfMonth = new Date(year, month, 1);
-                const endOfMonth = new Date(year, month + 1, 0);
+            toggleCategory() {
+                this.currentCategory = this.currentCategory === 'personal' ? 'work' : 'personal';
                 
-                if (event.repeat === 'none') {
-                    if (eventDate >= startOfMonth && eventDate <= endOfMonth) {
-                        occurrences.push(eventDate);
-                    }
-                } else if (event.repeat === 'daily') {
-                    let current = new Date(Math.max(eventDate, startOfMonth));
-                    while (current <= endOfMonth) {
-                        if (current >= eventDate) {
-                            occurrences.push(new Date(current));
-                        }
-                        current.setDate(current.getDate() + 1);
-                    }
-                } else if (event.repeat === 'weekly') {
-                    let current = new Date(eventDate);
-                    while (current <= endOfMonth) {
-                        if (current >= startOfMonth && current >= eventDate) {
-                            occurrences.push(new Date(current));
-                        }
-                        current.setDate(current.getDate() + 7);
-                    }
-                } else if (event.repeat === 'monthly') {
-                    const eventDay = eventDate.getDate();
-                    if (year > eventDate.getFullYear() || (year === eventDate.getFullYear() && month >= eventDate.getMonth())) {
-                        const daysInThisMonth = new Date(year, month + 1, 0).getDate();
-                        if (eventDay <= daysInThisMonth) {
-                            occurrences.push(new Date(year, month, eventDay));
-                        }
-                    }
+                // Update toggle UI
+                const toggle = document.getElementById('categoryToggle');
+                const knob = document.getElementById('categoryToggleKnob');
+                const personalLabel = document.getElementById('personalLabel');
+                const workLabel = document.getElementById('workLabel');
+                
+                if (this.currentCategory === 'work') {
+                    toggle.classList.add('bg-primary');
+                    knob.style.transform = 'translateX(28px)';
+                    personalLabel.classList.remove('text-primary');
+                    workLabel.classList.add('text-primary');
+                } else {
+                    toggle.classList.remove('bg-primary');
+                    knob.style.transform = 'translateX(0)';
+                    personalLabel.classList.add('text-primary');
+                    workLabel.classList.remove('text-primary');
                 }
                 
-                return occurrences;
+                // Re-render everything
+                this.renderTasks();
+                this.renderNotes();
             }
 
-            async goToToday() {
-                this.currentDate = new Date();
-                await this.renderCalendar();
+            selectMood(emoji) {
+                this.selectedMood = emoji;
+                // Update UI to show selection
+                document.querySelectorAll('.mood-btn').forEach(btn => {
+                    if (btn.dataset.mood === emoji) {
+                        btn.style.backgroundColor = '#008080';
+                        btn.style.transform = 'scale(1.1)';
+                    } else {
+                        btn.style.backgroundColor = '';
+                        btn.style.transform = '';
+                    }
+                });
+            }
+
+            async saveMood() {
+                const physical = document.getElementById('physicalSlider').value;
+                const mental = document.getElementById('mentalSlider').value;
+                const mood = this.selectedMood;
+                
+                if (!mood) {
+                    return;
+                }
+                
+                const today = new Date().toISOString().split('T')[0];
+                
+                await this.db.add('moods', {
+                    date: today,
+                    physical: parseInt(physical),
+                    mental: parseInt(mental),
+                    mood: mood,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Reset form
+                document.getElementById('physicalSlider').value = 3;
+                document.getElementById('mentalSlider').value = 3;
+                document.getElementById('physicalValue').textContent = 3;
+                document.getElementById('mentalValue').textContent = 3;
+                this.selectedMood = null;
+                document.querySelectorAll('.mood-btn').forEach(btn => {
+                    btn.style.backgroundColor = '';
+                    btn.style.transform = '';
+                });
+                
+                // Refresh history
+                await this.renderMoodHistory();
+            }
+
+            async renderMoodHistory() {
+                const allMoods = await this.db.getAll('moods');
+                const moods = allMoods
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 7);
+                
+                const container = document.getElementById('moodHistory');
+                
+                if (moods.length === 0) {
+                    container.innerHTML = '<div class="text-gray-500 text-xs">No mood entries yet</div>';
+                    return;
+                }
+                
+                container.innerHTML = moods.map(m => {
+                    const date = new Date(m.timestamp);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    return `
+                        <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-2 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">${m.mood}</span>
+                                <div class="text-xs">
+                                    <div class="text-gray-400">${dateStr} ${timeStr}</div>
+                                    <div class="text-gray-500">P:${m.physical} M:${m.mental}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
 
             async renderTasks() {
-                const tasks = await this.db.getAll('tasks');
+                const allTasks = await this.db.getAll('tasks');
+                const tasks = allTasks.filter(t => (t.category || 'personal') === this.currentCategory);
                 const container = document.getElementById('tasks');
                 
                 if (tasks.length === 0) {
@@ -391,7 +445,11 @@
                 submit.onclick = async () => {
                     const input = document.getElementById('taskInput').value.trim();
                     if (input) {
-                        await this.db.add('tasks', { text: input, completed: false });
+                        await this.db.add('tasks', { 
+                            text: input, 
+                            completed: false,
+                            category: this.currentCategory
+                        });
                         await this.renderTasks();
                         this.closeModal();
                     }
@@ -399,7 +457,8 @@
             }
 
             async renderNotes() {
-                const notes = await this.db.getAll('notes');
+                const allNotes = await this.db.getAll('notes');
+                const notes = allNotes.filter(n => (n.category || 'personal') === this.currentCategory);
                 const container = document.getElementById('notes');
                 
                 if (notes.length === 0) {
@@ -421,191 +480,7 @@
                 await this.db.delete('notes', id);
                 await this.renderNotes();
             }
-
-            async renderEvents() {
-                const events = await this.db.getAll('events');
-                const container = document.getElementById('events');
-                
-                console.log('Rendering events, total count:', events.length);
-                
-                if (events.length === 0) {
-                    container.innerHTML = '<div class="text-gray-500 text-sm">No events yet</div>';
-                    return;
-                }
-                
-                // Get current timestamp (start of today)
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                const nowTS = now.getTime();
-                
-                const upcoming = [];
-                
-                events.forEach(event => {
-                    // Parse date string as YYYY-MM-DD and create date at noon to avoid timezone issues
-                    const dateStr = event.date + 'T12:00:00'; // Add time to force local timezone
-                    const eventDate = new Date(dateStr);
-                    eventDate.setHours(0, 0, 0, 0);
-                    const eventTS = eventDate.getTime();
-                    
-                    console.log('Event:', event.title, 'date:', event.date, 'eventTS:', eventTS, 'nowTS:', nowTS, 'show:', eventTS >= nowTS);
-                    
-                    if (eventTS >= nowTS) {
-                        upcoming.push({ ...event, nextDate: eventDate });
-                    }
-                });
-                
-                console.log('Upcoming events:', upcoming);
-                
-                if (upcoming.length === 0) {
-                    container.innerHTML = '<div class="text-gray-500 text-sm">No upcoming events</div>';
-                    return;
-                }
-                
-                // Sort by date
-                upcoming.sort((a, b) => a.nextDate - b.nextDate);
-                
-                // Show all events
-                container.innerHTML = upcoming.map(event => {
-                    const dateStr = event.nextDate.toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: event.nextDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-                    });
-                    const timeStr = event.time || 'All day';
-                    const repeatBadge = event.repeat !== 'none' ? `<span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">${event.repeat}</span>` : '';
-                    
-                    return `
-                        <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded p-3 group relative flex items-start gap-3">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <div class="font-medium text-sm">${event.title}</div>
-                                    ${repeatBadge}
-                                </div>
-                                <div class="text-gray-400 text-xs">${dateStr} • ${timeStr}</div>
-                                ${event.description ? `<div class="text-gray-500 text-xs mt-1">${event.description}</div>` : ''}
-                            </div>
-                            <button onclick="app.deleteEvent(${event.id})" 
-                                    class="text-red-500 opacity-0 group-hover:opacity-100 text-sm">×</button>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            getNextOccurrence(event, fromDate) {
-                const eventDate = new Date(event.date);
-                if (eventDate > fromDate && event.repeat === 'none') {
-                    return eventDate;
-                }
-                
-                let current = new Date(fromDate);
-                current.setHours(0, 0, 0, 0);
-                
-                if (event.repeat === 'daily') {
-                    if (eventDate <= current) {
-                        return current;
-                    }
-                    return eventDate;
-                } else if (event.repeat === 'weekly') {
-                    const dayOfWeek = eventDate.getDay();
-                    const currentDayOfWeek = current.getDay();
-                    const daysUntilNext = (dayOfWeek - currentDayOfWeek + 7) % 7;
-                    current.setDate(current.getDate() + (daysUntilNext === 0 ? 7 : daysUntilNext));
-                    
-                    if (current < eventDate) {
-                        return eventDate;
-                    }
-                    return current;
-                } else if (event.repeat === 'monthly') {
-                    const eventDay = eventDate.getDate();
-                    current.setDate(eventDay);
-                    
-                    if (current < fromDate) {
-                        current.setMonth(current.getMonth() + 1);
-                    }
-                    
-                    if (current < eventDate) {
-                        return eventDate;
-                    }
-                    return current;
-                }
-                
-                return null;
-            }
-
-            async deleteEvent(id) {
-                await this.db.delete('events', id);
-                await this.renderEvents();
-                await this.renderCalendar();
-            }
-
-            addEvent() {
-                const modal = document.getElementById('modal');
-                const title = document.getElementById('modalTitle');
-                const content = document.getElementById('modalContent');
-                const submit = document.getElementById('modalSubmit');
-                
-                title.textContent = 'Add Event';
-                content.innerHTML = `
-                    <input id="eventTitle" type="text" placeholder="Event title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3 box-border">
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <input id="eventDate" type="date" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border min-w-0">
-                        <input id="eventTime" type="time" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border min-w-0">
-                    </div>
-                    <select id="eventRepeat" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3 box-border">
-                        <option value="none">Does not repeat</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                    <textarea id="eventDescription" placeholder="Description (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border resize-none"></textarea>
-                `;
-                
-                modal.classList.remove('hidden');
-                
-                // Set default date to today and focus after DOM is ready
-                setTimeout(() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    const dateInput = document.getElementById('eventDate');
-                    if (dateInput) {
-                        dateInput.value = today;
-                    }
-                    document.getElementById('eventTitle')?.focus();
-                }, 100);
-                
-                submit.onclick = async () => {
-                    try {
-                        const eventTitle = document.getElementById('eventTitle')?.value.trim();
-                        const eventDate = document.getElementById('eventDate')?.value;
-                        const eventTime = document.getElementById('eventTime')?.value;
-                        const eventRepeat = document.getElementById('eventRepeat')?.value;
-                        const eventDescription = document.getElementById('eventDescription')?.value.trim();
-                        
-                        console.log('Saving event:', { eventTitle, eventDate, eventTime, eventRepeat, eventDescription });
-                        
-                        if (eventTitle && eventDate) {
-                            await this.db.add('events', { 
-                                title: eventTitle, 
-                                date: eventDate,
-                                time: eventTime || '',
-                                repeat: eventRepeat || 'none',
-                                description: eventDescription || ''
-                            });
-                            await this.renderEvents();
-                            await this.renderCalendar();
-                            this.closeModal();
-                            console.log('Event saved successfully');
-                        } else {
-                            console.error('Missing title or date');
-                            alert('Please enter a title and date');
-                        }
-                    } catch (error) {
-                        console.error('Error saving event:', error);
-                        alert('Failed to save event: ' + error.message);
-                    }
-                };
-            }
-
+            
             addNote() {
                 const modal = document.getElementById('modal');
                 const title = document.getElementById('modalTitle');
@@ -625,7 +500,11 @@
                     const noteTitle = document.getElementById('noteTitle').value.trim();
                     const noteContent = document.getElementById('noteContent').value.trim();
                     if (noteTitle && noteContent) {
-                        await this.db.add('notes', { title: noteTitle, content: noteContent });
+                        await this.db.add('notes', { 
+                            title: noteTitle, 
+                            content: noteContent,
+                            category: this.currentCategory
+                        });
                         await this.renderNotes();
                         this.closeModal();
                     }
