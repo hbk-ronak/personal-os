@@ -547,16 +547,18 @@
                 
                 title.textContent = 'Add Event';
                 content.innerHTML = `
-                    <input id="eventTitle" type="text" placeholder="Event title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
-                    <input id="eventDate" type="date" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
-                    <input id="eventTime" type="time" placeholder="Time (optional)" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
-                    <select id="eventRepeat" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3">
+                    <input id="eventTitle" type="text" placeholder="Event title" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3 box-border">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <input id="eventDate" type="date" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border min-w-0">
+                        <input id="eventTime" type="time" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border min-w-0">
+                    </div>
+                    <select id="eventRepeat" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white mb-3 box-border">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                     </select>
-                    <textarea id="eventDescription" placeholder="Description (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white"></textarea>
+                    <textarea id="eventDescription" placeholder="Description (optional)" rows="3" class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded px-3 py-2 text-white box-border resize-none"></textarea>
                 `;
                 
                 modal.classList.remove('hidden');
