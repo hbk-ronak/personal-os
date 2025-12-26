@@ -1,4 +1,4 @@
-import { db, currentPhase, isManualOverride, schedule, viewAllData, isRestMode, dailyLogs } from './stores.js';
+import { db, currentPhase, isManualOverride, schedule, viewAllData, dailyLogs } from './stores.js';
 import { exportData as exportDataFunction } from './export.js';
 
 export async function initApp() {
@@ -14,10 +14,8 @@ export async function initApp() {
     const savedPhase = localStorage.getItem('currentPhase');
     const savedManualOverride = localStorage.getItem('isManualOverride') === 'true';
     const savedViewAllData = localStorage.getItem('viewAllData') === 'true';
-    const savedRestMode = localStorage.getItem('isRestMode') === 'true';
     
     viewAllData.set(savedViewAllData);
-    isRestMode.set(savedRestMode);
     
     if (savedManualOverride && savedPhase) {
         currentPhase.set(savedPhase);
@@ -29,8 +27,6 @@ export async function initApp() {
         isManualOverride.set(false);
     }
     
-    // Check rest mode (will update if needed)
-    await checkFatigueLevel();
     
     // Request notification permission
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
@@ -92,38 +88,6 @@ export function syncToSchedule() {
     currentPhase.set(detectedPhase);
 }
 
-export async function checkFatigueLevel() {
-    const logs = await db.getAll('daily_logs');
-    if (logs.length === 0) {
-        isRestMode.set(false);
-        localStorage.setItem('isRestMode', 'false');
-        return;
-    }
-    
-    const latest = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-    const savedRestMode = localStorage.getItem('isRestMode') === 'true';
-    const newRestMode = latest.mental >= 4;
-    isRestMode.set(newRestMode);
-    
-    if (newRestMode !== savedRestMode) {
-        localStorage.setItem('isRestMode', newRestMode.toString());
-        if (typeof document !== 'undefined') {
-            if (newRestMode) {
-                document.body.classList.add('rest-mode');
-            } else {
-                document.body.classList.remove('rest-mode');
-                localStorage.removeItem('restBannerDismissed');
-            }
-        }
-    } else if (typeof document !== 'undefined') {
-        // Ensure class is set on initial load
-        if (newRestMode) {
-            document.body.classList.add('rest-mode');
-        } else {
-            document.body.classList.remove('rest-mode');
-        }
-    }
-}
 
 export function exportData() {
     return exportDataFunction();

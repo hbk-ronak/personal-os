@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { db, moods, selectedMood, isRestMode, dailyLogs } from '../lib/stores.js';
+    import { db, moods, selectedMood, dailyLogs } from '../lib/stores.js';
     
     let physicalValue = 3;
     let mentalValue = 3;
@@ -46,26 +46,12 @@
             timestamp: timestamp
         });
         
-        // Check fatigue level
-        await checkFatigueLevel();
-        
         // Reset form
         physicalValue = 3;
         mentalValue = 3;
         selectedMood.set(null);
         
         await loadMoodHistory();
-    }
-    
-    async function checkFatigueLevel() {
-        const logs = await db.getAll('daily_logs');
-        if (logs.length === 0) {
-            isRestMode.set(false);
-            return;
-        }
-        
-        const latest = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-        isRestMode.set(latest.mental >= 4);
     }
     
     $: selectedMoodValue = $selectedMood;

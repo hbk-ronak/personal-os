@@ -9,7 +9,6 @@ export const db = new DB();
 export const currentPhase = writable(null);
 export const isManualOverride = writable(false);
 export const viewAllData = writable(false);
-export const isRestMode = writable(false);
 export const schedule = writable([]);
 export const selectedMood = writable(null);
 

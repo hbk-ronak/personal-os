@@ -15,7 +15,6 @@
     import ReadingProtocolWidget from './components/ReadingProtocolWidget.svelte';
     import ExportWidget from './components/ExportWidget.svelte';
     import PhaseMenu from './components/PhaseMenu.svelte';
-    import RestModeBanner from './components/RestModeBanner.svelte';
     import SettingsModal from './components/SettingsModal.svelte';
     import MotivationWidget from './components/MotivationWidget.svelte';
     
@@ -97,9 +96,6 @@
 </script>
 
 <div class="bg-black text-white min-h-screen p-4 w-full">
-    <!-- Rest Mode Banner -->
-    <RestModeBanner />
-    
     <!-- Top Navigation -->
     <div class="max-w-2xl mx-auto mb-8">
         <div class="flex items-center justify-between mb-6">

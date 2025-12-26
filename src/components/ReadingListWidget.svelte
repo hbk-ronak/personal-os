@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { db, readingList, currentPhase, isRestMode } from '../lib/stores.js';
+    import { db, readingList } from '../lib/stores.js';
     
     let showModal = false;
     let bookTitle = '';
@@ -72,15 +72,7 @@
         showModal = true;
     }
     
-    $: {
-        let filteredBooks = $readingList;
-        if ($isRestMode && $currentPhase === 'DEEP_WORK') {
-            filteredBooks = filteredBooks.filter(b => b.category === 'fiction');
-        }
-        displayedBooks = filteredBooks;
-    }
-    
-    let displayedBooks = [];
+    $: displayedBooks = $readingList;
 </script>
 
 <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-6 min-h-[200px]">
