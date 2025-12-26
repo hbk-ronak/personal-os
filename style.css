@@ -1,0 +1,28 @@
+/**
+ * PersonalOS Custom Styles
+ */
+
+@media (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+body.rest-mode {
+    --primary: #F59E0B;
+    --primary-dark: #D97706;
+}
+
+body.rest-mode .bg-primary,
+body.rest-mode .text-primary,
+body.rest-mode .border-primary {
+    color: #F59E0B !important;
+    background-color: #F59E0B !important;
+    border-color: #F59E0B !important;
+}
+
+body.rest-mode [class*="accent-primary"] {
+    accent-color: #F59E0B;
+}
+
